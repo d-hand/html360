@@ -1,0 +1,46 @@
+{
+  "name": "html360",
+  "version": "1.0.0",
+  "description": "CLI tool to create standalone 360° panoramas in a single HTML file.",
+  "keywords": [
+    "panorama",
+    "360",
+    "pannellum",
+    "html-app",
+    "cli",
+    "webp",
+    "base64"
+  ],
+  "homepage": "https://github.com/d-hand/html360#readme",
+  "bugs": {
+    "url": "https://github.com/d-hand/html360/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d-hand/html360.git"
+  },
+  "license": "MIT",
+  "author": "d_hand",
+  "type": "commonjs",
+  "main": ".dist/index.js",
+  "bin": {
+    "html360": "dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node ./scripts/build.js"
+  },
+  "dependencies": {
+    "ansi-colors": "4.1.3",
+    "cli-progress": "3.12.0",
+    "commander": "14.0.3",
+    "pannellum": "2.5.7",
+    "png-to-ico": "2.1.8",
+    "sharp": "0.34.5",
+    "windows-shortcuts": "0.1.6"
+  }
+}
