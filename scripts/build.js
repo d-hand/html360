@@ -21,7 +21,7 @@ async function build() {
 
     await fs.rm(distPath, { recursive: true, force: true });
     await fs.mkdir(distPath);
-    await Promise.all([buildHtmlTemplate(), buildCli()]);
+    await Promise.all([buildCli(), buildHtmlTemplate(),]);
 
     console.log("✅ Build complete.");
   } catch (e) {
