@@ -6,21 +6,12 @@ A simple CLI tool to pack 360° equirectangular panoramas into a single, standal
 Perfect for sharing with friends via messengers or viewing offline.
 
 ## 💡 The Core Idea
-The philosophy of **html360** is to make a 360° panorama feel like a simple, universal file (like a standard image or video). 
+The philosophy of **html360** is to make a 360° panorama feel like a simple, universal file (like a image or video). 
 
 You can open it on any device without:
 - Installing special software (**any modern web browser is all you need**).
-- Relying on external services (Google Photos, Yandex Disk, etc.).
+- Relying on external services (Google Photos, Yandex Panoramas, etc.).
 - An internet connection.
-
-It turns a complex interactive experience into a single portable document.
-
-## ✨ Features
-- **All-in-one**: JS, CSS, and your photo (WebP Base64) inside one portable HTML.
-- **Optimization**: Automatic 8K resizing and WebP conversion via [Sharp](https://sharp.pixelplumbing.com).
-- **Zero Dependencies**: The output file works without a server or internet connection.
-- **Mobile Ready**: Built-in support for touch gestures and gyroscope.
-- **Powered by**: Uses the lightweight [Pannellum](https://pannellum.org) viewer.
 
 ## 🖼️ Live Demo
 Experience the result of an 8K panorama processed by html360:
@@ -37,17 +28,12 @@ Or run it without installation using `npx`:
 npx html360 panorama_1.jpg panorama_2.jpg
 ```
 
-## 📂 Why use this?
-Normally, sharing a 360° panorama requires a web server or a specialized app. html360 converts your image into a single document that you can send as a file. The recipient just needs a browser to open it.
 
-## 📜 License
-MIT
-
-## 🛠 Windows Integration
+## ✨ Windows Integration
 
 One of the coolest features of **html360** is the ability to pack panoramas directly from your File Explorer. No terminal skills required for your friends!
 
-![Windows Context Menu Preview](https://github.com/d-hand/html360/blob/main/assets/windows-integration.png)
+![Windows Context Menu Preview](https://github.com/d-hand/html360/raw/dev/assets/windows-integration.gif)
 *Right-click -> Send to -> html360*
 
 ### Setup Context Menu
@@ -65,14 +51,14 @@ html360 uninstall-menu
 3. Right-click -> Send to -> html360.
 4. Done! A standalone .html file will appear next to each image instantly.
 
-## 📊 Optimization Stats
-How `html360` saves space while keeping **8K quality** (8192×4096):
+## ✨ Smart Optimization
+`html360` uses **Sharp** to compress high-resolution panoramas while preserving **8K quality** (8192×4096).
 
-| Feature | Raw JPEG (Original) | html360 Output (WebP) | Improvement |
-| :--- | :--- | :--- | :--- |
-| **File Size** | ~12.0 MB | **~2.4 MB** | **-80% Smaller** |
-| **Portability** | Image only | **Single HTML file** | JS/CSS included |
-| **Accessibility**| Requires viewer | **Any Browser** | Instant 360° |
+*   **Before:** ~12.0 MB (Raw JPEG)
+*   **After:** **~2.4 MB** (Optimized WebP inside HTML)
+
+This results in a **~80% reduction** in file size, making your interactive 360° scenes incredibly fast to load and easy to share.
+
 
 ## 💻 Requirements
 
@@ -81,6 +67,10 @@ To use **html360**, you need to have the following installed:
 - **[Node.js](https://nodejs.org)**: `v20.10.0` or higher (LTS recommended)
 - **Windows** (optional): Only required for the `install-menu` feature
 
-## 🤝 Credits
-This project was developed with the creative and technical assistance of **Google Gemini**. 
-Together, the panoramas were optimized, the CLI architecture was built, and the Windows integration was polished to make **html360** a reality.
+## 🤝 Built With
+Big thanks to these amazing projects that power html360:
+*   **[Pannellum](https://pannellum.org)** — the core 360° viewer engine.
+*   **[Sharp](https://sharp.pixelplumbing.com)** — for high-speed image optimization.
+*   **[Google Gemini](https://deepmind.google)** — for co-authoring the entire project.
+*   **The Open Source Community** — and all the amazing dependencies that make this tool possible.
+
