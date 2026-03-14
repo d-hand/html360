@@ -33,7 +33,7 @@ npx html360 panorama_1.jpg panorama_2.jpg
 
 One of the coolest features of **html360** is the ability to pack panoramas directly from your File Explorer. No terminal skills required for your friends!
 
-![Windows Context Menu Preview](https://github.com/d-hand/html360/raw/dev/assets/windows-integration-v2.gif)
+![Windows Context Menu Preview](assets/windows-integration-v2.gif)
 *Right-click -> Send to -> html360*
 
 ### Setup Context Menu
@@ -62,13 +62,21 @@ This results in a **~80% reduction** in file size, making your interactive 360°
 ## ✨ Raw Original Mode
 For archival purposes or high-end desktop viewing, use the **Raw Original** mode (`-r` or `--raw`). This skips all compression and embeds your source file bit-for-bit into the HTML.
 
-> [!TIP]
+> ### 💡 Tip
 > Use **8K mode** for sharing on mobile and web, and **Raw Original** for your personal high-quality collection where every pixel matters.
 >
 > **8K mode** is so precise that visual differences are virtually indistinguishable on **12K (12000×6000)** panoramas, even with moderate zooming. Significant visual improvements with **Raw Original** only become noticeable on ultra-high-resolution sources, such as **21K (21456×10728)** or higher, particularly when preserving fine textures and original color depth.
 
+## ✨ Viewport Persistence
+You can now define exactly what your audience sees first.
 
-
+![Viewport Persistence](assets/viewport-persistence.gif)
+*Rotate -> Right-click -> Save*
+### How it works
+1. Open your generated `.html` panorama in any browser.
+2. Pan and tilt to find the **perfect starting angle**.
+3. **Right-click** (Desktop) or **Long Press** (Mobile) to open the new context menu.
+4. Select **Save**. Done! A new standalone .html file is downloaded, with your chosen coordinates baked into the code as the new default starting point.
 
 ## 💻 Requirements
 

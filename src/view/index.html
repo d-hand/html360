@@ -9,8 +9,20 @@
   </head>
   <body>
     <div id="loader"></div>
-    <div id="panorama"></div>
-    <script id="panoramaData" type="text/plain">{{PANORAMA_DATA}}</script>
+    <div id="panorama">
+      <div id="menu" class="hidden">      
+        <button id="menu-fullscreen" class="menu-item">Fullscreen</button>
+        <button id="menu-save" class="menu-item">Save</button>
+
+        <div class="panel-footer">
+          <a href="https://www.npmjs.com/package/html360" target="_blank" class="footer-link">html360</a>
+          <a href="https://pannellum.org/" target="_blank" class="footer-link">pannellum</a>
+          <a href="https://sharp.pixelplumbing.com/" target="_blank" class="footer-link">sharp</a>
+        </div>
+      </div>    
+    </div>
+    <script id="panorama-data" type="text/plain">{{PANORAMA_DATA}}</script>
+    <script id="state" type="application/json">{{STATE}}</script>
     <script>{{JS}}</script>
   </body>
 </html>

@@ -1,5 +1,24 @@
 # CHANGELOG
 
+
+## 2.4.0 (2026-03-18)
+### ✨ Features
+- **Viewport Persistence (Editor Mode)**: You can now set the default starting angle (yaw and pitch) directly in the browser. Rotate the panorama to the perfect spot, hit Save, and the HTML file will remember that exact view the next time it's opened.
+- **Zero-UI Experience**: We’ve embraced a minimalist aesthetic. By default, there are no buttons or overlays on the screen—just your panorama. Nothing stands between you and the 360° immersion.
+- **Smart Context Menu**: All essential tools have migrated to a clean, modern context menu accessible via Right-Click (Desktop) or Long Press (Mobile)
+  - **Fullscreen**: Instant immersion in one tap.
+  - **Save**: Inject the current coordinates into the file’s code.
+  - **Credits**: Quick links to the project's roots—html360 and Pannellum.
+
+
+### 🛠 Technical Changes
+- **Optimized Build Pipeline**:  Clear separation between Production and Development builds.
+  - **Production**: Clean, lightweight builds with Source Maps disabled for maximum performance and privacy.
+  - **Development**: Full debugging capabilities and source maps enabled for local coding.
+
+
+<!-- ####################################################################################################### -->
+
 ## 2.3.0 (2026-03-13)
 ### ✨ Features
 - **Raw Original Mode (`-r`, `--raw`)**: New processing mode that embeds images as-is without any compression or resizing. Perfect for archiving and high-end desktop viewing.

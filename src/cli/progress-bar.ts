@@ -1,12 +1,12 @@
 import c from "ansi-colors";
 import { SingleBar } from "cli-progress";
 import { formatTime, getRSS, toMB } from "./utils";
+import { Context } from "./types";
 
 export async function startProgressBar(
-  total: number,
-  threads: number,
+  ctx: Context,
   action: (increment: (errors: number) => void) => Promise<void>,
-): Promise<void> {  
+): Promise<void> {
   const start = performance.now();
 
   const progressBar = new SingleBar({
@@ -17,7 +17,7 @@ export async function startProgressBar(
       `${c.cyan("{value}/{total}")} | `,
 
       `${c.cyan("{time}")} | `,
-      `${c.cyan(`Threads: ${threads}`)} | `,
+      `${c.cyan(`Threads: ${ctx.threadCount}`)} | `,
       `${c.cyan("MAX RAM: {maxRAM} MB")} | `,
       `${c.red(`Errors: {errors}`)}`,
     ].join(""),
@@ -33,24 +33,24 @@ export async function startProgressBar(
       maxRAM = rss;
     }
     return maxRAM;
-  }
+  };
 
   const getPayload = (totalTime: number, errors: number) => {
     const time = formatTime(totalTime);
-    const maxRAM = toMB(getMaxRAM())
+    const maxRAM = toMB(getMaxRAM());
     return {
       time,
       maxRAM,
-      errors
-    }
-  }
+      errors,
+    };
+  };
 
   const increment = (errors: number) => {
     const time = performance.now() - start;
     progressBar.increment(getPayload(time, errors));
   };
 
-  progressBar.start(total, 0, getPayload(0, 0));
+  progressBar.start(ctx.imgPaths.length, 0, getPayload(0, 0));
 
   try {
     await action(increment);
