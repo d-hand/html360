@@ -62,7 +62,7 @@ This results in a **~80% reduction** in file size, making your interactive 360°
 ## ✨ Raw Original Mode
 For archival purposes or high-end desktop viewing, use the **Raw Original** mode (`-r` or `--raw`). This skips all compression and embeds your source file bit-for-bit into the HTML.
 
-> [!TIP]
+> ### 💡 Tip
 > Use **8K mode** for sharing on mobile and web, and **Raw Original** for your personal high-quality collection where every pixel matters.
 >
 > **8K mode** is so precise that visual differences are virtually indistinguishable on **12K (12000×6000)** panoramas, even with moderate zooming. Significant visual improvements with **Raw Original** only become noticeable on ultra-high-resolution sources, such as **21K (21456×10728)** or higher, particularly when preserving fine textures and original color depth.

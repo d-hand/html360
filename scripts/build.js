@@ -12,6 +12,17 @@ const srcPath = path.join(__dirname, "../src");
 const distPath = path.join(__dirname, "../dist");
 const svgPath = path.join(__dirname, "../src/view/assets/html360.svg");
 const icoPath = path.join(distPath, "html360.ico");
+const isProd = process.argv.includes("prod");
+
+/** @type {import('esbuild').BuildOptions} */
+const commonOptions = {
+  bundle: true,
+  minify: isProd,
+  sourcemap: !isProd,
+  define: {
+    'process.env.NODE_ENV': isProd ? '"production"' : '"development"',
+  },
+};
 
 build();
 
@@ -21,7 +32,7 @@ async function build() {
 
     await fs.rm(distPath, { recursive: true, force: true });
     await fs.mkdir(distPath);
-    await Promise.all([buildCli(), buildHtmlTemplate(),]);
+    await Promise.all([buildCli(), buildHtmlTemplate()]);
 
     console.log("✅ Build complete.");
   } catch (e) {
@@ -44,13 +55,11 @@ async function buildCli() {
 async function buildCliJs() {
   /** @type {import('esbuild').BuildOptions} */
   const options = {
+    ...commonOptions,
     entryPoints: [path.join(srcPath, "cli/index.ts")],
     platform: "node",
     target: "node20",
     format: "esm",
-    bundle: true,
-    minify: true,
-    sourcemap: true,
     write: true,
     packages: "external",
     outdir: "dist",
@@ -77,10 +86,8 @@ async function buildHtmlTemplate() {
 async function buildTemplateJs() {
   /** @type {import('esbuild').BuildOptions} */
   const options = {
+    ...commonOptions,
     entryPoints: [path.join(srcPath, "view/ts/index.ts")],
-    bundle: true,
-    minify: true,
-    sourcemap: true,
     write: false,
     platform: "browser",
     target: ["chrome58", "firefox57", "safari11", "edge16"],
@@ -94,9 +101,8 @@ async function buildTemplateJs() {
 async function buildTemplateCss() {
   /** @type {import('esbuild').BuildOptions} */
   const options = {
+    ...commonOptions,
     entryPoints: [path.join(srcPath, "view/css/index.css")],
-    bundle: true,
-    minify: true,
     write: false,
     platform: "browser",
     target: ["chrome58", "firefox57", "safari11", "edge16"],

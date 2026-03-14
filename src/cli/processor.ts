@@ -1,34 +1,33 @@
-import os from "node:os";
 import path from "node:path";
 import fs from "node:fs";
 import fsPromises from "node:fs/promises";
-import { fileURLToPath } from "node:url";
 import { pipeline, finished } from "node:stream/promises";
 import pLimit from "p-limit";
 import { Base64Encode } from "base64-stream";
 import sharp from "sharp";
 import { logger } from "./logger";
 import { startProgressBar } from "./progress-bar";
-import { getMimeType, silent, SUPPORTED_FORMATS } from "./utils";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { silent } from "./utils";
+import { getMimeType, verifyFileFormat } from "./supported-formats";
+import { writeAsync } from "./stream-helper";
+import { State } from "../core/state";
+import { Context, FileError, Options } from "./types";
+import { getContext } from "./context";
+import pkg from "../../package.json" with { type: "json" };
 
 export async function buildHtml360(imgPaths: string[], options: Options) {
+  imgPaths = imgPaths.map((x) => path.resolve(x));
   const errors: FileError[] = [];
-  const templateInfo = await getTemplateHtmlInfo();
+  const ctx = await getContext(imgPaths, options);
+  const limit = pLimit(ctx.threadCount);
 
-  const cpuCount = os.cpus().length;
-  const threads = Math.max(1, cpuCount - 1);
-  const limit = pLimit(threads);
-
-  await startProgressBar(imgPaths.length, threads, async (incProgressBar) => {
+  await startProgressBar(ctx, async (incProgressBar) => {
     const tasks = imgPaths.map((imgPath) =>
       limit(async () => {
         const fileName = path.basename(imgPath);
 
         try {
-          await processImage(imgPath, templateInfo, options);
+          await processImage(imgPath, ctx);
         } catch (error) {
           errors.push({ fileName, error });
         } finally {
@@ -42,46 +41,21 @@ export async function buildHtml360(imgPaths: string[], options: Options) {
   errors.forEach(logFileError);
 }
 
-async function processImage(
-  imgPath: string,
-  template: TemplateHtmlInfo,
-  options: Options,
-) {
-  const ext = path.extname(imgPath).toLowerCase();
-  if (!(ext in SUPPORTED_FORMATS)) {
-    throw new Error(`Unsupported file format: ${ext}`);
-  }
-
+async function processImage(imgPath: string, ctx: Context) {
+  verifyFileFormat(imgPath);
+  const { options, htmlChunks } = ctx;
   const htmlPath = getHtmlPath(imgPath, options);
   const fileHandle = await fsPromises.open(htmlPath, "w");
   try {
     const writeStream = fileHandle.createWriteStream();
 
-    // Нюанс template.prefix и data:image/webp;base64 очень маленький. Они точно попадут во внутренний буфер стрима.
-    writeStream.write(template.prefix);
+    await writeAsync(writeStream, htmlChunks.first);
+    await writeImage(writeStream, imgPath, options);
+    await writeAsync(writeStream, htmlChunks.beforeState);
+    await writeState(writeStream, imgPath, ctx);
+    await writeAsync(writeStream, htmlChunks.last);
 
-    if (options.raw) {
-      const mimeType = getMimeType(ext);
-      writeStream.write(`data:${mimeType};base64,`);
-
-      const readStream = fs.createReadStream(imgPath);
-
-      await pipeline(readStream, new Base64Encode(), writeStream, {
-        end: false,
-      });
-    } else {
-      writeStream.write("data:image/webp;base64,");
-
-      const transformer = sharp(imgPath)
-        .resize(8192, 4096, { fit: "inside" })
-        .webp({ quality: 85 });
-
-      await pipeline(transformer, new Base64Encode(), writeStream, {
-        end: false,
-      });
-    }
-
-    writeStream.end(template.suffix);
+    writeStream.end();
     await finished(writeStream);
     await fileHandle.close();
   } catch (error) {
@@ -91,45 +65,84 @@ async function processImage(
   }
 }
 
-async function getTemplateHtmlInfo(): Promise<TemplateHtmlInfo> {
-  const source = await fsPromises.readFile(
-    path.join(__dirname, "template.html"),
-    "utf8",
-  );
-  const [prefix, suffix] = source.split("{{PANORAMA_DATA}}");
+async function writeImage(
+  writeStream: fs.WriteStream,
+  imgPath: string,
+  options: Options,
+) {
+  if (options.raw) {
+    const mimeType = getMimeType(imgPath);
+    writeStream.write(`data:${mimeType};base64,`);
 
-  return {
-    source,
-    prefix,
-    suffix,
-  };
+    const readStream = fs.createReadStream(imgPath);
+
+    await pipeline(readStream, new Base64Encode(), writeStream, {
+      end: false,
+    });
+  } else {
+    writeStream.write("data:image/webp;base64,");
+
+    const transformer = sharp(imgPath)
+      .resize(8192, 4096, { fit: "inside" })
+      .webp({ quality: 85 });
+
+    await pipeline(transformer, new Base64Encode(), writeStream, {
+      end: false,
+    });
+  }
 }
 
-function getHtmlPath(absoluteImgPath: string, options: Options) {
-  const outputDir = path.dirname(absoluteImgPath);
-  const name = path.parse(absoluteImgPath).name;
+async function writeState(
+  writeStream: fs.WriteStream,
+  imgPath: string,
+  ctx: Context,
+) {
+  const state: State = {
+    name: getHtmlName(imgPath, ctx.options),
+    yaw: 0,
+    pitch: 0,
+    hfov: 100,
+    tours: getTours(imgPath, ctx),
+    version: pkg.version,
+  };
+
+  const json = JSON.stringify(state);
+  await writeAsync(writeStream, json);
+}
+
+function getHtmlPath(imgPath: string, options: Options) {
+  const dir = path.dirname(imgPath);
+  const name = getHtmlName(imgPath, options);
+  return path.join(dir, name);
+}
+
+function getHtmlName(imgPath: string, options: Options) {
+  const name = path.parse(imgPath).name;
   const suffix = options.raw ? "_RAW" : "";
-  const outputFileName =  `${name}${suffix}.html`;
-  const finalPath = path.join(outputDir, outputFileName);
-  return finalPath;
+  return `${name}${suffix}.html`;
+}
+
+function getTours(imgPath: string, ctx: Context) {
+  const htmlPath = getHtmlPath(imgPath, ctx.options);
+  const tours = ctx.imgPaths
+    .filter((x) => x !== imgPath)
+    .map((x) => getHtmlPath(x, ctx.options))
+    .map((x) => {
+      let rel = path.relative(path.dirname(htmlPath), x);
+
+      // Node.js может вернуть 'file.html', но для браузера лучше './file.html'
+      if (!rel.startsWith(".")) rel = "./" + rel;
+
+      // Заменяем обратный слэш на прямой
+      rel = rel.split(path.sep).join("/");
+
+      return rel;
+    });
+
+  return tours;
 }
 
 function logFileError({ fileName, error }: FileError) {
   const message = error instanceof Error ? error.message : String(error);
   logger.error(`Failed to process ${fileName}: ${message}`);
 }
-
-type FileError = {
-  fileName: string;
-  error: any;
-};
-
-type TemplateHtmlInfo = {
-  source: string;
-  prefix: string;
-  suffix: string;
-};
-
-export type Options = {
-  raw: boolean;
-};

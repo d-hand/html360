@@ -32,7 +32,9 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc && node ./scripts/build.js"
+    "_base": "tsc && node ./scripts/build.js",
+    "build": "npm run _base -- prod",
+    "dev": "npm run _base"
   },
   "dependencies": {
     "ansi-colors": "4.1.3",
