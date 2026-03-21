@@ -18,7 +18,8 @@ const isProd = process.argv.includes("prod");
 const commonOptions = {
   bundle: true,
   minify: isProd,
-  sourcemap: !isProd,
+  sourcemap: isProd ? false : "inline",
+  sourcesContent: !isProd,
   define: {
     IS_PROD: String(isProd),
     IS_DEV: String(!isProd),
@@ -89,6 +90,9 @@ async function buildTemplateJs() {
   /** @type {import('esbuild').BuildOptions} */
   const options = {
     ...commonOptions,
+    // КРИТИЧНО ДЛЯ ОТЛАДКИ: sourceURL создает виртуальный файл в браузере.
+    // Без него браузер считает строки от начала HTML, из-за чего отладка "мажет".    
+    banner: isProd ? {} : { js: "//# sourceURL=html360.js" },
     entryPoints: [path.join(srcPath, "view/index.ts")],
     write: false,
     platform: "browser",
