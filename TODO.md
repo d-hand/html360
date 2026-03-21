@@ -38,50 +38,9 @@
 
 
 <!-- 
+Если редактор всё еще «белый» и не понимает вложенность, попробуй в настройках VS Code (settings.json) добавить:
+"files.associations": { "*.css": "scss" }.
 
-Релиз 
-html360 — v2.4.0 "The Creator Update"
-This version transforms html360 from a passive viewer into an autonomous editor. We’ve stripped away the clutter to let your panoramas shine, while giving you the power to "freeze" the perfect view directly into the file.
-
-
-    hotSpots: [
-      {
-        pitch: 14.1,
-        yaw: 1.5,
-        type: "scene",
-        text: "Baltimore Museum of Art",
-        URL: "./DJI_20241012165448_0149_D_3.html",
-        attributes: { target: "_self"}
-      },
-      {
-        pitch: -9.4,
-        yaw: 222.6,
-        type: "info",
-        text: "Art Museum Drive",
-      },
-    ],
-
-
-
-function getTours(imgPath: string, ctx: Context) {
-  const htmlPath = getHtmlPath(imgPath, ctx.options);
-  const tours = ctx.imgPaths
-    .filter((x) => x !== imgPath)
-    .map((x) => getHtmlPath(x, ctx.options))
-    .map((x) => {
-      let rel = path.relative(path.dirname(htmlPath), x);
-
-      // Node.js может вернуть 'file.html', но для браузера лучше './file.html'
-      if (!rel.startsWith(".")) rel = "./" + rel;
-
-      // Заменяем обратный слэш на прямой
-      rel = rel.split(path.sep).join("/");
-
-      return rel;
-    });
-
-  return tours;
-}
 
 
 -->

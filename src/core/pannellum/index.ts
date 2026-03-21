@@ -15,7 +15,7 @@ export type PannellumConfig = {
   yaw?: number;
   pitch?: number;
   hfov?: number;
-  hotSpots?: PannellumHotSpots[];
+  hotSpots?: PannellumHotSpot[];
   draggable?: boolean;
 };
 
@@ -45,7 +45,7 @@ export type PannellumViewer = {
   ): void;
 };
 
-export type PannellumHotSpots = {
+export type PannellumHotSpot = {
   id?: string;
   cssClass?: string;
   pitch: number;

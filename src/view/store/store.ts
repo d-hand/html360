@@ -1,58 +1,78 @@
 import { defaultState, State } from "../../core/state";
-import { Nullable } from "../../core/types";
+import { getElementById } from "../utils/document-helper";
+
+export type Store = ReturnType<typeof create>;
+
+export const Store = {
+  create,
+};
 
 type Listener = (state: State) => void;
 
-export class Store {
-  state: State;
-  private stateElement: Nullable<HTMLElement>;
-  private listeners: Listener[] = [];
+function create() {
+  const stateElement = getElementById("state");
+  let listeners: Set<Listener> = new Set();
+  let state = getState(stateElement);
 
-  constructor() {
-    try {
-      const stateElement = document.getElementById("state");
-      this.stateElement = stateElement;
-      this.state = JSON.parse(stateElement!.textContent);
-    } catch (error) {
-      console.log(error);
-      this.state = defaultState;
+  const update = (patch: Partial<State>) => {
+    const nextState = { ...state, ...patch };
+
+    if (JSON.stringify(nextState) === JSON.stringify(state)) {
+      return;
     }
-  }
 
-  subscribe(fn: Listener) {
-    this.listeners.push(fn);
+    state = nextState;
 
-    fn(this.state);
+    save();
+
+    listeners.forEach((fn) => fn(state));
+
+    if (IS_DEV) {
+      console.log(state);
+    }
+  };
+
+  const subscribe = (fn: Listener) => {
+    listeners.add(fn);
+
+    fn(state);
 
     return () => {
-      this.listeners = this.listeners.filter((x) => x !== fn);
+      listeners.delete(fn);
     };
-  }
-
-  private notify() {
-    this.save();
-    this.listeners.forEach((fn) => fn(this.state));
-  }
-
-  update = (patch: Partial<State>) => {
-    this.state = { ...this.state, ...patch };
-    this.notify();
   };
 
-  save = () => {
-    if (this.stateElement) {
-      this.stateElement.textContent = JSON.stringify(this.state);
-    }
+  const save = () => {
+    stateElement.textContent = JSON.stringify(state);
   };
 
-  download() {
-    this.save();
+  const download = () => {
+    save();
 
     const fullHtml = "<!doctype html>\n" + document.documentElement.outerHTML;
     const blob = new Blob([fullHtml], { type: "text/html" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = this.state.name;
+    link.download = state.name;
     link.click();
-  }
+  };
+
+  return {
+    get state() {
+      return state;
+    },
+    update,
+    subscribe,
+    save,
+    download,
+  };
 }
+
+const getState = (stateElement: HTMLElement) => {
+  try {
+    return JSON.parse(stateElement.textContent);
+  } catch (error) {
+    console.log(error);
+    return defaultState;
+  }
+};

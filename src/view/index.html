@@ -10,16 +10,37 @@
   <body>
     <div id="loader"></div>
     <div id="panorama">
-      <div id="menu" class="hidden">      
-        <button id="menu-fullscreen" class="menu-item">Fullscreen</button>
-        <button id="menu-save" class="menu-item">Save</button>
-
-        <div class="panel-footer">
-          <a href="https://www.npmjs.com/package/html360" target="_blank" class="footer-link">html360</a>
-          <a href="https://pannellum.org/" target="_blank" class="footer-link">pannellum</a>
-          <a href="https://sharp.pixelplumbing.com/" target="_blank" class="footer-link">sharp</a>
+      <div class="ui-layer">
+        <div id="main-menu" class="menu hidden">
+          <button id="main-menu-fullscreen" class="button">Fullscreen</button>
+          <button id="main-menu-save" class="button">Save View</button>
+          <button id="main-menu-hotspot" class="button">Points of Interest</button>
+          <div class="menu-footer">
+            <a href="https://www.npmjs.com/package/html360" target="_blank" class="menu-footer-link">html360</a>
+            <a href="https://pannellum.org/" target="_blank" class="menu-footer-link">pannellum</a>
+            <a href="https://sharp.pixelplumbing.com/" target="_blank" class="menu-footer-link">sharp</a>
+          </div>
         </div>
-      </div>    
+        <div id="hotspot-menu" class="hidden menu">
+          <div class="menu-header">
+            Points of Interest
+          </div>
+          <button id="hotspot-menu-add" class="button">Add</button>
+          <button id="hotspot-menu-edit" class="button">Edit</button>
+          <button id="hotspot-menu-delete" class="button">Delete</button>
+        </div>
+        <div id="hotspot" class="hidden">
+          <div class="hotspot-header">
+            Points of Interest
+          </div>
+          <div class="hotspot-content">
+          </div>
+          <div class="hotspot-footer">
+            <button id="hotspot-action" class="button">Save</button>
+            <button id="hotspot-close" class="button secondary">Close</button>
+          </div>
+        </div>
+      </div>
     </div>
     <script id="panorama-data" type="text/plain">{{PANORAMA_DATA}}</script>
     <script id="state" type="application/json">{{STATE}}</script>

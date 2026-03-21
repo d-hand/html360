@@ -1,0 +1,53 @@
+#hotspot {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-index-1);
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  padding: var(--panel-padding);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: var(--panel-border);
+}
+
+#hotspot.add {
+  
+}
+
+.hotspot-header {
+  flex: 0 0 auto;
+  margin-bottom: var(--panel-delimiter-margin);
+  padding-bottom: var(--panel-delimiter-padding);
+  border-bottom: var(--panel-border);
+}
+
+.hotspot-content {
+  flex: 1 1 auto;
+}
+
+.hotspot-footer {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  margin-top: var(--panel-delimiter-margin);
+  padding-top: var(--panel-delimiter-padding);
+  border-top: var(--panel-border);
+
+}
+
+@media (min-width: 769px) {
+  #hotspot {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: unset;
+
+    width: var(--panel-width);
+  }
+}

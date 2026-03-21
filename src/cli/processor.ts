@@ -102,6 +102,8 @@ async function writeState(
     yaw: defaultState.yaw,
     pitch: defaultState.pitch,
     hfov: defaultState.hfov,
+    hotspots: defaultState.hotspots,
+    tourCandidatesUrls: getToursCandidatesUrls(imgPath, ctx),
     version: pkg.version,
   };
 
@@ -119,6 +121,26 @@ function getHtmlName(imgPath: string, options: Options) {
   const name = path.parse(imgPath).name;
   const suffix = options.raw ? "_RAW" : "";
   return `${name}${suffix}.html`;
+}
+
+function getToursCandidatesUrls(imgPath: string, ctx: Context): string[] {
+  const htmlPath = getHtmlPath(imgPath, ctx.options);
+  const tours = ctx.imgPaths
+    .filter((x) => x !== imgPath)
+    .map((x) => getHtmlPath(x, ctx.options))
+    .map((x) => {
+      let rel = path.relative(path.dirname(htmlPath), x);
+
+      // Node.js может вернуть 'file.html', но для браузера лучше './file.html'
+      if (!rel.startsWith(".")) rel = "./" + rel;
+
+      // Заменяем обратный слэш на прямой
+      rel = rel.split(path.sep).join("/");
+
+      return rel;
+    });
+
+  return tours;
 }
 
 function logFileError({ fileName, error }: FileError) {

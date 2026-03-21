@@ -1,0 +1,53 @@
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 14px 20px;
+  border: var(--panel-border);
+  border-radius: 16px;
+  
+  background: #fff;
+  color: #000;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button.danger {
+  background: #ff3b30;
+  color: #fff;
+  border: none;
+}
+
+.button.secondary {
+  background: #333;
+  color: #fff;
+}
+
+.button:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) {
+  .button:hover {
+    background: #e5e5e5;
+  }
+
+  .button.danger:hover {
+    background: #e03126;
+  }
+
+  .button.secondary:hover {
+    background: #444;
+  }
+}
+
+@media (min-width: 769px) {
+  .button {
+    width: unset;
+  }
+}

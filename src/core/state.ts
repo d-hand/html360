@@ -1,8 +1,12 @@
+import { PannellumHotSpot } from "./pannellum";
+
 export type State = {
   name: string;
   yaw: number;
   pitch: number;
   hfov: number;
+  hotspots: PannellumHotSpot[];
+  tourCandidatesUrls: string[];
   version: string;
 };
 
@@ -11,5 +15,7 @@ export const defaultState: State = {
   yaw: 0,
   pitch: 0,
   hfov: 100,
+  hotspots: [],
+  tourCandidatesUrls: [],
   version: "",
 };

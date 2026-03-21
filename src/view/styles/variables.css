@@ -1,0 +1,15 @@
+:root {
+  --main-blue: #3a96dd;
+
+  --panel-width: 300px;  
+  --panel-padding: 16px;
+  --panel-border: 1px solid rgba(255, 255, 255, 0.2);
+  --panel-radius: 28px;
+  --panel-delimiter-margin: 8px;
+  --panel-delimiter-padding: 12px;
+
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-filter: blur(12px);
+
+  --z-index-1: 100;
+}
