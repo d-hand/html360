@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## 2.5.0 (2026-03-27)
+### ✨ Features
+- **Visual 3D Tour Editor**: Create interconnected panoramas directly in your browser. No coding required.
+- **Smart URL Autocomplete**: When linking panoramas, the editor automatically indexes and suggests relative paths for all processed files.
+- **Rich Information Spots**: Add interactive tooltips with text descriptions and external web links (e.g., Wikipedia).
+- **Precision Crosshair**: New high-contrast central crosshair with a dual-outline design for perfect visibility on any background (snow, sky, or shadows).
+- **Interactive States**: Visual feedback (scaling and color changes) when the crosshair hovers over active hotspots.
+
+---
+*This release marks a milestone in AI-human co-creation, bringing professional 3D-tour editing capabilities to everyone.*
+
+<!-- ####################################################################################################### -->
+
+
 ## 2.4.0 (2026-03-18)
 ### ✨ Features
 - **Viewport Persistence (Editor Mode)**: You can now set the default starting angle (yaw and pitch) directly in the browser. Rotate the panorama to the perfect spot, hit Save, and the HTML file will remember that exact view the next time it's opened.

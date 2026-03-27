@@ -1,0 +1,49 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--color-black);
+  color: var(--color-white);
+
+  /* The ultimate system font stack */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  
+  /* Makes text crisp on high-DPI screens (Mac/iOS/Android) */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Prevents text size jumps on mobile orientation change */
+  -webkit-text-size-adjust: 100%;  
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+#ui-layer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-index-1);
+  pointer-events: none; 
+}
+
+#ui-layer * {
+  pointer-events: auto; 
+}
+
+#panorama {
+  width: 100vw;
+  height: 100vh;
+  background: var(--color-black);
+}
+
+.hidden {
+  visibility: hidden;
+}

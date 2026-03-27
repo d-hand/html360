@@ -1,7 +1,9 @@
 # TODO
 
 ## Unreleased
-- [ ] Редактирование. Туры %)
+
+- [ ] Более чистое сохранение
+- [ ] Изучить как создают панорамы высокго качества!) https://pannellum.org/documentation/examples/multiresolution/ Кажется, я обасрался с RAW %)
 - [ ] В pannelum есть ограничение на браузеры. Возможно это как-то должно повлиять на мою сборку, но это не точно...
 - [ ] Выводи информации сколько весит js и css который добавляется в html
 - [ ] Тесты
@@ -37,52 +39,6 @@
 
 
 
-<!-- 
-
-Релиз 
-html360 — v2.4.0 "The Creator Update"
-This version transforms html360 from a passive viewer into an autonomous editor. We’ve stripped away the clutter to let your panoramas shine, while giving you the power to "freeze" the perfect view directly into the file.
-
-
-    hotSpots: [
-      {
-        pitch: 14.1,
-        yaw: 1.5,
-        type: "scene",
-        text: "Baltimore Museum of Art",
-        URL: "./DJI_20241012165448_0149_D_3.html",
-        attributes: { target: "_self"}
-      },
-      {
-        pitch: -9.4,
-        yaw: 222.6,
-        type: "info",
-        text: "Art Museum Drive",
-      },
-    ],
-
-
-
-function getTours(imgPath: string, ctx: Context) {
-  const htmlPath = getHtmlPath(imgPath, ctx.options);
-  const tours = ctx.imgPaths
-    .filter((x) => x !== imgPath)
-    .map((x) => getHtmlPath(x, ctx.options))
-    .map((x) => {
-      let rel = path.relative(path.dirname(htmlPath), x);
-
-      // Node.js может вернуть 'file.html', но для браузера лучше './file.html'
-      if (!rel.startsWith(".")) rel = "./" + rel;
-
-      // Заменяем обратный слэш на прямой
-      rel = rel.split(path.sep).join("/");
-
-      return rel;
-    });
-
-  return tours;
-}
-
-
--->
-
+Давай я напомню, что мы сделали. Цвета это все мелкие детали... 
+Самое главное что мы сделали:
+- Научились создавать 3D туры. Теперь html360 это не просто инструмент для просмотра панорам. Теперь можно создавать 3D туры. П

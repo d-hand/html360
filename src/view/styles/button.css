@@ -1,0 +1,93 @@
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 20px;
+  border: var(--panel-border);
+  border-radius: 16px;
+
+  background: var(--color-white);
+  color: var(--color-black);
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button.danger {
+  background: var(--color-red);
+  color: var(--color-white);
+  border: none;
+}
+
+.button.secondary {
+  background: var(--color-gray);
+  color: var(--color-white);
+}
+
+.button:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) {
+  .button:hover {
+    background: var(--color-white-soft);  
+  }
+
+  .button.danger:hover {
+    background: var(--color-red-deep);
+  }
+
+  .button.secondary:hover {
+    background: var(--color-gray-soft);
+  }
+}
+
+.button:focus {
+  background: var(--color-white-soft);
+}
+
+.button.danger:focus {
+  background: var(--color-red-deep);
+}
+
+.button.secondary:focus {
+  background: var(--color-gray-soft);
+}
+
+@media (min-width: 769px) {
+  .button {
+    width: unset;
+  }
+}
+
+
+[data-tooltip] {
+  position: relative;
+}
+
+/* Сама подсказка */
+[data-tooltip]::after {
+  content: attr(data-tooltip); /* Берем текст из атрибута */
+  position: absolute;
+  bottom: 125%; /* Размещаем над элементом */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s;
+  z-index: 10;
+}
+
+/* Показываем при наведении */
+[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+}

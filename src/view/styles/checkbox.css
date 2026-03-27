@@ -1,0 +1,52 @@
+
+.checkbox {
+  display: flex;
+  align-items: center; 
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  color: var(--color-white-60);
+}
+
+.checkbox input {
+  display: none;
+}
+
+.checkmark {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0; /* Чтобы квадрат не сжимался, если текст длинный */
+  border: 1.5px solid var(--color-white-60);
+  border-radius: 4px;
+  background: transparent;
+}
+
+/* Сама галочка (птичка) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  
+  /* Идеальная центровка птички */
+  left: 5px;
+  top: 2px; 
+  
+  width: 4px; /* Чуть уже */
+  height: 8px; /* Чуть длиннее */
+  
+  border: var(--panel-border);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Показываем при нажатии */
+input:checked + .checkmark:after {
+  display: block;
+}
+
+input:checked + .checkmark {
+  background-color: var(--color-white);
+  border-color: var(--color-white);
+}

@@ -1,0 +1,15 @@
+.edit-mode-actinos {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translate(-50%);
+  z-index: var(--z-index-1);
+
+  display: flex;
+  gap: 12px;
+  max-width: 90%;
+}
+
+.edit-mode-actinos .button {
+  padding: 10px 16px;
+}

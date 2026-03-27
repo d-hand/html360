@@ -78,6 +78,27 @@ You can now define exactly what your audience sees first.
 3. **Right-click** (Desktop) or **Long Press** (Mobile) to open the new context menu.
 4. Select **Save**. Done! A new standalone .html file is downloaded, with your chosen coordinates baked into the code as the new default starting point.
 
+## ✨ Create Interactive 3D Tours Right in Your Browser
+
+![3D-Tour-Editor-Demo](assets/3d-tour-editor.gif)
+
+Transform a collection of panoramas into a connected 3D experience without leaving your browser:
+
+*   **Visual Editor:** Add transition points and info-spots with a few clicks.
+*   **Smart Autocomplete:** Linked panoramas are automatically indexed, making it easy to connect scenes via relative URLs.
+*   **Rich Info-Spots:** Embed text descriptions and external web links directly into your 360° space.
+
+### 🛠 How to build your tour:
+1. **Batch Process:** Run `html360 *.jpg` to generate HTML files for all your rooms.
+2. **Enter Edit Mode:** Open any panorama and toggle the **Editor** (Right-click).
+3. **Aim & Add Panorama:** Use the new **precision crosshair** to point at a door, select "Add Panorama", and pick the next room from the **smart autocomplete** list.
+4. **Add Context:** Drop info-spots with text to make the tour informative.
+5. **Baked-in Result:** Click **Save**. A new standalone HTML file is generated with all your hotspots and transitions baked inside. 
+
+
+
+
+
 ## 💻 Requirements
 
 To use **html360**, you need to have the following installed:
