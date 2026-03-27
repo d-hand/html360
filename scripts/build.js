@@ -18,6 +18,7 @@ const isProd = process.argv.includes("prod");
 const commonOptions = {
   bundle: true,
   minify: isProd,
+  keepNames: true,
   sourcemap: isProd ? false : "inline",
   sourcesContent: !isProd,
   define: {
