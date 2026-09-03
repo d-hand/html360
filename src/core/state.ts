@@ -1,12 +1,14 @@
 import { PannellumHotSpot } from "./pannellum/pannellum";
 
 export type State = {
-  htmlName: string;
+  htmlFileName: string;
   yaw: number;
   pitch: number;
   hfov: number;
   hotspots: PannellumHotSpot[];
   tourCandidatesUrls: string[];
+  autoNav: AutoNavState | null;
+  isLoaded: boolean;
   isReadOnly: boolean;
   isEditMode: boolean;
   isMultires: boolean;
@@ -17,13 +19,22 @@ export type State = {
   version: string;
 };
 
+export type AutoNavState = {
+  totalCount: number;
+  pageNumber: number;
+  prevUrl: string;
+  nextUrl: string;
+}
+
 export const defaultState: State = {
-  htmlName: "",
+  htmlFileName: "",
   yaw: 0,
   pitch: 0,
   hfov: 100,
   hotspots: [],
   tourCandidatesUrls: [],
+  autoNav: null,
+  isLoaded: false,
   isReadOnly: false,
   isEditMode: false,
   isMultires: false,

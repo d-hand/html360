@@ -98,6 +98,27 @@ By default, a panorama has only one "home" position. With the **Orientation Copy
 
 <!-- ####################################################################################################### -->
 
+## ✨ Automatic Panorama Gallery (Auto-Nav)
+
+` 📸 Panorama 1  📄 [← Back]  🔢 2 / 5  📄 [Forward →]  📸 Panorama 3 `
+
+When you batch process multiple photos at once, you can view them as a seamless, continuous photo gallery. You don't need to manually link any scenes — **html360** takes care of it automatically.
+
+The generator bakes intuitive **Next** and **Back** arrow buttons directly into each standalone HTML file.
+
+- **Like a Photo Album:** Flip through your panoramas just like standard photos.
+- **Smart Counter:** Displays an elegant `"Scene X / Total"` indicator right between the navigation arrows, so you always know where you are.
+- **Keyboard Control:** Use the `←` and `→` arrow to instantly switch between panoramas.
+
+### How to Enable
+
+This feature is controlled via the global configuration. Run `html360 config` in your terminal and enable the `useAutoNav` option. 
+
+*(For more details on where settings are stored, check the **Global Configuration** section below).*
+
+
+<!-- ####################################################################################################### -->
+
 ## ✨ 8K Optimization
 By default `html360` uses **Sharp** to compress high-resolution panoramas while preserving **8K quality** (8192×4096).
 
@@ -201,6 +222,7 @@ html360 config
 | `author` | `string` | `""` | Name of the panorama author. |
 | `authorUrl` | `string` | `""` | Link to the author's profile or website. |
 | `useImageNameAsTitle` | `boolean` | `false` | Automatically uses the image file name as panorama title. |
+| `useAutoNav` | `boolean` | `false` | Automatically enables Next/Back gallery navigation. |
 
 ### Config Location
 The global configuration file is stored in your user profile directory:

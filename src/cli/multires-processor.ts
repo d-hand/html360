@@ -1,86 +1,59 @@
 import { html360Gen } from "html360-gen";
 import fs from "node:fs";
-import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { logger } from "./logger";
 import { defaultState, State } from "../core/state";
-import { MultiresContext, MultiresOptions } from "./types";
 import { getMultiresContext } from "./context";
+import { isNil } from "./utils/utils";
+import { MultiresOptions } from "./types/multires-options";
 import pkg from "../../package.json" with { type: "json" };
-import { getName, isNil } from "./utils";
+import { getAutoNavState, prepareImgPaths } from "./utils/processor";
+import { buildMultiresItems } from "./multires-item-builder";
+import { MultiresItem } from "./types/process-item";
 
 export function buildMultires(imgPaths: string[], options: MultiresOptions) {
-  imgPaths = imgPaths.map((x) => path.resolve(x));
+  imgPaths = prepareImgPaths(imgPaths);
   const ctx = getMultiresContext(imgPaths, options);
+  const items = buildMultiresItems(imgPaths, ctx);
 
-  for (const imgPath of imgPaths) {
-    const fileName = path.basename(imgPath);
-    try {
-      logger.info(`Start ${fileName}`);
-      processImage(imgPath, ctx);
-      logger.success(`Finish ${fileName}`);
-    } catch (error) {
-      logger.error(error);
-    }
+  for (const item of items) {
+    logger.info(`Start ${item.imgFileName}`);
+    processItem(item);
+    logger.success(`Finish ${item.imgFileName}`);
   }
 }
 
-function processImage(imgPath: string, ctx: MultiresContext) {
-  const output = getOutputInfo(imgPath);
-
-  if (fs.existsSync(output.dir)) {
-    fs.rmSync(output.dir, { recursive: true, force: true });
+function processItem(item: MultiresItem) {
+  if (fs.existsSync(item.htmlDir)) {
+    fs.rmSync(item.htmlDir, { recursive: true, force: true });
   }
 
-  const args = getHtml360GenArgs(imgPath, output.dir, ctx);
+  const args = getHtml360GenArgs(item);
   const result = spawnSync(html360Gen.getBinaryPath(), args, {
     stdio: "inherit", // Пробрасываем логи Python-скрипта в консоль
     shell: false, // node запустит html360-gen напрямую, а не внутри cmd или bash
   });
 
   if (result.status !== 0) {
-    throw Error(`Error while processing ${imgPath}`);
+    throw Error(`Error while processing ${item.imgPath}`);
   }
 
-  let html = ctx.templateHtml
-    .replace("{{TITLE}}", getName(imgPath))
+  let html = item.ctx.templateHtml
+    .replace("{{TITLE}}", item.imgName)
     .replace(
       "{{PANORAMA_DATA}}",
       "<!-- In multiresolution mode {{PANORAMA_DATA}} is empty -->",
     )
-    .replace("{{STATE}}", getStateJSON(imgPath, ctx));
+    .replace("{{STATE}}", getStateJSON(item));
 
-  fs.writeFileSync(output.htmlPath, html);
+  fs.writeFileSync(item.htmlPath, html);
 }
 
-function getOutputInfo(imgPath: string): {
-  dir: string;
-  htmlPath: string;
-  htmlName: string;
-  name: string;
-} {
-  const name = getName(imgPath);
-  const dir = path.join(path.dirname(imgPath), name);
-  const htmlName = "index.html";
-  const htmlPath = path.join(dir, htmlName);
+function getHtml360GenArgs(item: MultiresItem): string[] {
+  const opts = item.ctx.options;
 
-  return {
-    dir,
-    htmlPath,
-    htmlName,
-    name,
-  };
-}
-
-function getHtml360GenArgs(
-  imgPath: string,
-  outputDir: string,
-  ctx: MultiresContext,
-): string[] {
-  const opts = ctx.options;
-
-  const args = [imgPath];
-  args.push("--output", outputDir);
+  const args = [item.imgPath];
+  args.push("--output", item.htmlDir);
   args.push("--quality", opts.quality || "95");
 
   if (opts.cylindrical) args.push("--cylindrical");
@@ -102,44 +75,19 @@ function getHtml360GenArgs(
   return args;
 }
 
-function getStateJSON(imgPath: string, ctx: MultiresContext) {
-  const output = getOutputInfo(imgPath);
-
+function getStateJSON(item: MultiresItem) {
   const state: State = {
     ...defaultState,
-    htmlName: output.htmlName,
-    tourCandidatesUrls: getToursCandidatesUrls(imgPath, ctx),
+    htmlFileName: item.htmlFileName,
+    tourCandidatesUrls: item.relativeUrls,
+    autoNav: getAutoNavState(item.ctx.config, item.relativeUrls, item.index),
     isMultires: true,
-    tabTitle: output.name,
-    title: ctx.config.useImageNameAsTitle ? output.name : "",
-    author: ctx.config.author,
-    authorURL: ctx.config.authorUrl,
+    tabTitle: item.imgName,
+    title: item.ctx.config.useImageNameAsTitle ? item.imgName : "",
+    author: item.ctx.config.author,
+    authorURL: item.ctx.config.authorUrl,
     version: pkg.version,
   };
 
   return JSON.stringify(state);
-}
-
-function getToursCandidatesUrls(
-  imgPath: string,
-  ctx: MultiresContext,
-): string[] {
-  const outputDir = getOutputInfo(imgPath).dir;
-
-  const tours = ctx.imgPaths
-    .filter((x) => x !== imgPath)
-    .map((x) => getOutputInfo(x).htmlPath)
-    .map((x) => {
-      let rel = path.relative(outputDir, x);
-
-      // Node.js может вернуть 'file.html', но для браузера лучше './file.html'
-      if (!rel.startsWith(".")) rel = "./" + rel;
-
-      // Заменяем обратный слэш на прямой
-      rel = rel.split(path.sep).join("/");
-
-      return rel;
-    });
-
-  return tours;
 }

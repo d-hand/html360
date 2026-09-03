@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import ws from "windows-shortcuts";
 import { fileURLToPath } from "url";
 import { logger } from "./logger";
-import { silent } from "./utils";
+import { silent } from "./utils/utils";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

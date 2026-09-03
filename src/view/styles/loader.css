@@ -19,6 +19,7 @@
   left: 0;
   top: 0;
   animation: animloader 2s linear infinite;
+  animation-fill-mode: backwards;
   z-index: var(--z-index-max);
 }
 

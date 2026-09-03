@@ -1,4 +1,3 @@
-import path from "node:path";
 import fs from "node:fs";
 import fsPromises from "node:fs/promises";
 import { pipeline, finished } from "node:stream/promises";
@@ -7,29 +6,33 @@ import { Base64Encode } from "base64-stream";
 import sharp from "sharp";
 import { logger } from "./logger";
 import { startProgressBar } from "./progress-bar";
-import { getName, silent } from "./utils";
+import { silent } from "./utils/utils";
 import { getMimeType, verifyFileFormat } from "./supported-formats";
-import { writeAsync } from "./stream-utils";
+import { writeAsync } from "./utils/stream";
 import { defaultState, State } from "../core/state";
-import { HtmlContext, FileError, HtmlOptions } from "./types";
 import { getHtmlContext } from "./context";
 import pkg from "../../package.json" with { type: "json" };
+import { HtmlOptions } from "./types/html-options";
+import { FileError } from "./types/file-rrror";
+import { getAutoNavState, prepareImgPaths } from "./utils/processor";
+import { buildHtmlItems } from "./html-item-builder";
+import { HtmlItem } from "./types/process-item";
 
 export async function buildHtml(imgPaths: string[], options: HtmlOptions) {
-  imgPaths = imgPaths.map((x) => path.resolve(x));
+  imgPaths = prepareImgPaths(imgPaths);
+
   const errors: FileError[] = [];
   const ctx = await getHtmlContext(imgPaths, options);
   const limit = pLimit(ctx.threadCount);
+  const items = buildHtmlItems(imgPaths, ctx);
 
   await startProgressBar(ctx, async (incProgressBar) => {
-    const tasks = imgPaths.map((imgPath) =>
+    const tasks = items.map(x =>
       limit(async () => {
-        const fileName = path.basename(imgPath);
-
         try {
-          await processImage(imgPath, ctx);
+          await processItem(x);
         } catch (error) {
-          errors.push({ fileName, error });
+          errors.push({ fileName: x.imgFileName, error });
         } finally {
           incProgressBar(errors.length);
         }
@@ -38,21 +41,24 @@ export async function buildHtml(imgPaths: string[], options: HtmlOptions) {
     await Promise.all(tasks);
   });
 
-  errors.forEach(logFileError);
+  if (errors.length > 0) {
+    errors.forEach(logFileError);
+    throw new Error("Build failed");
+  }
 }
 
-async function processImage(imgPath: string, ctx: HtmlContext) {
-  verifyFileFormat(imgPath);
-  const { options, htmlChunks } = ctx;
-  const htmlPath = getHtmlPath(imgPath, options);
-  const fileHandle = await fsPromises.open(htmlPath, "w");
+async function processItem(item: HtmlItem) {
+  verifyFileFormat(item.imgPath);
+  const { htmlChunks } = item.ctx;
+
+  const fileHandle = await fsPromises.open(item.htmlPath, "w");
   try {
     const writeStream = fileHandle.createWriteStream();
 
-    await writeFirst(writeStream, imgPath, ctx);
-    await writeImage(writeStream, imgPath, options);
+    await writeFirst(writeStream, item);
+    await writeImage(writeStream, item);
     await writeAsync(writeStream, htmlChunks.beforeState);
-    await writeState(writeStream, imgPath, ctx);
+    await writeState(writeStream, item);
     await writeAsync(writeStream, htmlChunks.last);
 
     writeStream.end();
@@ -60,31 +66,23 @@ async function processImage(imgPath: string, ctx: HtmlContext) {
     await fileHandle.close();
   } catch (error) {
     await silent(() => fileHandle.close());
-    await silent(() => fsPromises.unlink(htmlPath));
+    await silent(() => fsPromises.unlink(item.htmlPath));
     throw error;
   }
 }
 
-async function writeFirst(
-  writeStream: fs.WriteStream,
-  imgPath: string,
-  ctx: HtmlContext,
-) {
-  const title = getName(imgPath);
-  const first = ctx.htmlChunks.first.replace("{{TITLE}}", title);
+async function writeFirst(writeStream: fs.WriteStream, item: HtmlItem) {
+  const title = item.imgName;
+  const first = item.ctx.htmlChunks.first.replace("{{TITLE}}", title);
   await writeAsync(writeStream, first);
 }
 
-async function writeImage(
-  writeStream: fs.WriteStream,
-  imgPath: string,
-  options: HtmlOptions,
-) {
-  if (options.raw) {
-    const mimeType = getMimeType(imgPath);
+async function writeImage(writeStream: fs.WriteStream, item: HtmlItem) {
+  if (item.ctx.options.raw) {
+    const mimeType = getMimeType(item.imgPath);
     writeStream.write(`data:${mimeType};base64,`);
 
-    const readStream = fs.createReadStream(imgPath);
+    const readStream = fs.createReadStream(item.imgPath);
 
     await pipeline(readStream, new Base64Encode(), writeStream, {
       end: false,
@@ -92,7 +90,7 @@ async function writeImage(
   } else {
     writeStream.write("data:image/webp;base64,");
 
-    const transformer = sharp(imgPath)
+    const transformer = sharp(item.imgPath)
       .resize(8192, 4096, { fit: "inside" })
       .webp({ quality: 85 });
 
@@ -102,58 +100,26 @@ async function writeImage(
   }
 }
 
-async function writeState(
-  writeStream: fs.WriteStream,
-  imgPath: string,
-  ctx: HtmlContext,
-) {
-  const name = getName(imgPath);
+async function writeState(writeStream: fs.WriteStream, item: HtmlItem) {
   const state: State = {
     ...defaultState,
-    htmlName: getHtmlName(imgPath, ctx.options),
-    tourCandidatesUrls: getToursCandidatesUrls(imgPath, ctx),
+    htmlFileName: item.htmlFileName,
+    tourCandidatesUrls: item.relativeUrls,
+    autoNav: getAutoNavState(
+      item.ctx.config,
+      item.relativeUrls,
+      item.index
+    ),
     isMultires: false,
-    tabTitle: name,
-    title: ctx.config.useImageNameAsTitle ? name : "",
-    author: ctx.config.author,
-    authorURL: ctx.config.authorUrl,
+    tabTitle: item.imgName,
+    title: item.ctx.config.useImageNameAsTitle ? item.imgName : "",
+    author: item.ctx.config.author,
+    authorURL: item.ctx.config.authorUrl,
     version: pkg.version,
   };
 
   const json = JSON.stringify(state);
   await writeAsync(writeStream, json);
-}
-
-function getHtmlPath(imgPath: string, options: HtmlOptions) {
-  const dir = path.dirname(imgPath);
-  const name = getHtmlName(imgPath, options);
-  return path.join(dir, name);
-}
-
-function getHtmlName(imgPath: string, options: HtmlOptions) {
-  const name = getName(imgPath);
-  const suffix = options.raw ? "_RAW" : "";
-  return `${name}${suffix}.html`;
-}
-
-function getToursCandidatesUrls(imgPath: string, ctx: HtmlContext): string[] {
-  const htmlPath = getHtmlPath(imgPath, ctx.options);
-  const tours = ctx.imgPaths
-    .filter((x) => x !== imgPath)
-    .map((x) => getHtmlPath(x, ctx.options))
-    .map((x) => {
-      let rel = path.relative(path.dirname(htmlPath), x);
-
-      // Node.js может вернуть 'file.html', но для браузера лучше './file.html'
-      if (!rel.startsWith(".")) rel = "./" + rel;
-
-      // Заменяем обратный слэш на прямой
-      rel = rel.split(path.sep).join("/");
-
-      return rel;
-    });
-
-  return tours;
 }
 
 function logFileError({ fileName, error }: FileError) {

@@ -8,6 +8,7 @@ import { OrientationMessager } from "./orientation-messager/orientation-messager
 import { UILayer } from "./ui-layer/ui-layer";
 import { PanoInfoModal } from "./pano-info-modal/pano-info-modal";
 import { PanoInfo } from "./pano-info/pano-info";
+import { AutoNav } from "./auto-nav/auto-nav";
 
 window.addEventListener("load", async () => {
   const store = Store.create();
@@ -16,8 +17,9 @@ window.addEventListener("load", async () => {
   const mainMenu = MainMenu.create(store, uiLayer, viewer);
   const panoInfoModal = PanoInfoModal.create(store, uiLayer);
   const hotspotModal = HotspotModal.create(store, uiLayer, viewer);
-  const editModeActions = EditModeActions.create(store,  uiLayer, panoInfoModal, hotspotModal);
+  const editModeActions = EditModeActions.create(store, uiLayer, panoInfoModal, hotspotModal);
 
+  AutoNav.create(store, uiLayer);
   PanoInfo.create(store, uiLayer);
   Crosshair.create(store, uiLayer);
   OrientationMessager.create(store);

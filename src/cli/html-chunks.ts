@@ -1,7 +1,7 @@
 import path from "node:path";
 import fs from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { HtmlChunks } from "./types";
+import { HtmlChunks } from "./types/html-chunks";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

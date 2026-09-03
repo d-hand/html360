@@ -33,20 +33,20 @@ async function create(store: Store, uiLayer: HTMLDivElement) {
     const blob = await (await fetch(base64Data)).blob();
     const objectURL = URL.createObjectURL(blob);
 
-    getElementById("loader").style.display = "none";
-
     const config = buildConfig({
       type: "equirectangular",
       panorama: objectURL,
     });
 
-    const viewer = pannellum.viewer(panoramaElm, config);
+    const result = pannellum.viewer(panoramaElm, config);
 
-    viewer.on("load", () => {
+    result.on("load", () => {
       URL.revokeObjectURL(objectURL);
+      store.setIsLoaded(true);
+      getElementById("loader").style.display = "none";
     });
 
-    return viewer;
+    return result;
   }
 
   async function createMultiresViewer() {
@@ -65,7 +65,12 @@ async function create(store: Store, uiLayer: HTMLDivElement) {
 
     getElementById("loader").style.display = "none";
 
-    return pannellum.viewer(panoramaElm, config);
+    const result = pannellum.viewer(panoramaElm, config); 
+
+    setTimeout(() => {store.setIsLoaded(true)}, 0);
+    getElementById("loader").style.display = "none";
+    
+    return result;
   }
 
   function buildConfig(initConfig: PannellumConfig): PannellumConfig {
@@ -118,7 +123,7 @@ async function create(store: Store, uiLayer: HTMLDivElement) {
 
   viewer.on("zoomchange", () => {
     store.setHfov(viewer.getHfov());
-  }); 
+  });
 
   const addHotspot = (
     hotspotData: Pick<

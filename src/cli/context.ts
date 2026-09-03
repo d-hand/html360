@@ -3,8 +3,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getHtmlChunks, TEMPLATE_HTML } from "./html-chunks";
-import { HtmlContext, HtmlOptions, MultiresContext, MultiresOptions } from "./types";
 import { readConfig } from "./configure";
+import { HtmlOptions } from "./types/html-options";
+import { HtmlContext } from "./types/html-context";
+import { MultiresOptions } from "./types/multires-options";
+import { MultiresContext } from "./types/multires-context";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

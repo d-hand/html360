@@ -19,8 +19,10 @@ type StoreEvents = {
   removeHotspot: (id: string) => void;
   setIsEditMode: (value: boolean) => void;
   setTitle: (value: string) => void;
+  setTabTitle: (value: string) => void;
   setAuthor: (value: string) => void
   setAuthorUrl: (value: string) => void
+  setIsLoaded: (value: boolean) => void
 };
 
 function create() {
@@ -79,6 +81,12 @@ function create() {
   const setTabTitle = (value: string) => {
     state.tabTitle = value.trim();
     document.title = state.tabTitle || "html360";
+    event.emit("setTabTitle", value)
+  };
+
+  const setIsLoaded = (value: boolean) => {
+    state.isLoaded = value;
+    event.emit("setIsLoaded", value);
   };
 
   const getOrientationUrlParams = () => {
@@ -102,7 +110,7 @@ function create() {
     const blob = new Blob([fullHtml], { type: "text/html" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = newState.htmlName;
+    link.download = newState.htmlFileName;
     link.click();
   };
 
@@ -113,6 +121,7 @@ function create() {
     setYaw,
     setPitch,
     setHfov,
+    setIsLoaded,
     setIsEditMode,
     setTitle,
     setAuthor,

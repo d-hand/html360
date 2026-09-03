@@ -53,6 +53,7 @@ export type PannellumViewer = {
   addHotSpot: (hs: PannellumHotSpot) => void;
   removeHotSpot: (id: string) => void;
   lookAt: (pitch?: number, yaw?: number, hfov?: number, animated?: boolean|number, callback?: Function, callbackArgs?: any) => void;
+  isLoaded: () => boolean;
 };
 
 export type PannellumHotSpot = {

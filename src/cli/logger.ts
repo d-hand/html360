@@ -1,5 +1,5 @@
 import c from "ansi-colors";
-import { toMB } from "./utils";
+import { toMB } from "./utils/utils";
 
 const INFO = c.cyan("[INFO]:");
 const OK = c.green.bold("[OK]:");

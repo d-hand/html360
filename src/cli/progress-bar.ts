@@ -1,7 +1,7 @@
 import c from "ansi-colors";
 import { SingleBar } from "cli-progress";
-import { formatTime, getRSS, toMB } from "./utils";
-import { HtmlContext } from "./types";
+import { formatTime, getRSS, toMB } from "./utils/utils";
+import { HtmlContext } from "./types/html-context";
 
 export async function startProgressBar(
   ctx: HtmlContext,

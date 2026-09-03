@@ -1,0 +1,57 @@
+.auto-nav {
+    position: absolute;
+    bottom: 20px;
+    /* Прижимаем к низу для удобства пальцев */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: var(--z-index-1);
+    /* Поверх фрейма */
+    pointer-events: none;
+    /* Чтобы контейнер не мешал кликам по фрейму */
+}
+
+.auto-nav-btn {
+    pointer-events: auto;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+
+    /* Эти три строчки центрируют стрелку внутри круга */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    user-select: none;
+    transition: background 0.2s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.auto-nav-btn:active {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(0.92);
+    border-color: #fff;
+}
+
+.auto-nav-btn svg {
+    width: 32px;
+    height: 32px;
+}
+
+.auto-nav-counter {
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}

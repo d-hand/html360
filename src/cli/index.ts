@@ -6,6 +6,7 @@ import { installMenu, uninstallMenu } from "./menu";
 import { logger } from "./logger";
 import pkg from "../../package.json" with { type: "json" };
 import { configure } from "./configure";
+import { CanceledError } from "./canceled-error";
 
 try {
   program
@@ -96,6 +97,9 @@ try {
     program.help();
   }
 } catch (error) {
+  if (error instanceof CanceledError) {
+    process.exit(130);
+  }
   logger.error(error);
   process.exit(1);
 }

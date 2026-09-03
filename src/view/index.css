@@ -16,7 +16,12 @@
 @import "./edit-mode-actions/edit-mode-actions.css";
 @import "./hotspot-modal/hotspot-modal.css";
 @import "./pano-info/pano-info.css";
+@import "./auto-nav/auto-nav.css";
 
 .pnlm-about-msg {
   display: none !important;
+}
+
+.pnlm-load-box {
+    display: none !important;
 }

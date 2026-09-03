@@ -2,7 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "os";
 import * as p from "@clack/prompts";
-import { Config, defaultConfig } from "./config";
+import { Config, defaultConfig } from "./types/config";
+import { CanceledError } from "./canceled-error";
 
 const CONFIG_PATH = path.join(os.homedir(), ".html360.json");
 
@@ -11,44 +12,49 @@ export async function configure() {
 
   p.intro("Configure global settings for all panoramas");
 
-  const newConfig: Pick<Config, "author" | "authorUrl" | "useImageNameAsTitle"> = 
-  await p.group(
-    {
-      author: () =>
-        p.text({
-          message: "Enter author:",
-          placeholder: "Example: Superman",
-          initialValue: config.author,
-        }),
-      authorUrl: () =>
-        p.text({
-          message: "Enter author url:",
-          placeholder: "Example: https://example.com",
-          initialValue: config.authorUrl,
-          validate: (value) => {
-            if (!value) return;
+  const newConfig: Config =
+    await p.group(
+      {
+        author: () =>
+          p.text({
+            message: "Enter author:",
+            placeholder: "Example: Superman",
+            initialValue: config.author,
+          }),
+        authorUrl: () =>
+          p.text({
+            message: "Enter author url:",
+            placeholder: "Example: https://example.com",
+            initialValue: config.authorUrl,
+            validate: (value) => {
+              if (!value) return;
 
-            // Simple URL regex check (accepts http://, https://, or root-relative paths if needed)
-            const urlPattern =
-              /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/i;
-            if (!urlPattern.test(value)) {
-              return "Please enter a valid URL (e.g., https://example.com) or leave it empty.";
-            }
-          },
-        }),
-      useImageNameAsTitle: () =>
-        p.confirm({
-          message: "Use image name as panorama title?",
-          initialValue: config.useImageNameAsTitle,
-        }),
-    },
-    {
-      onCancel: () => {
-        p.cancel("Configuration canceled.");
-        process.exit(0);
+              // Simple URL regex check (accepts http://, https://, or root-relative paths if needed)
+              const urlPattern =
+                /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/i;
+              if (!urlPattern.test(value)) {
+                return "Please enter a valid URL (e.g., https://example.com) or leave it empty.";
+              }
+            },
+          }),
+        useImageNameAsTitle: () =>
+          p.confirm({
+            message: "Use image name as panorama title?",
+            initialValue: config.useImageNameAsTitle,
+          }),
+        useAutoNav: () =>
+          p.confirm({
+            message: "Enable auto-navigation for panoramas?",
+            initialValue: config.useAutoNav,
+          }),
       },
-    },
-  );
+      {
+        onCancel: () => {
+          p.cancel("Configuration canceled.");
+          throw new CanceledError();
+        },
+      },
+    );
 
   const updatedConfig = { ...config, ...newConfig };
   saveConfig(updatedConfig);

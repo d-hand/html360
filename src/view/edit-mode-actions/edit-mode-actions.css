@@ -13,3 +13,8 @@
 .edit-mode-actinos .button {
   padding: 10px 16px;
 }
+
+.edit-mode-actinos .button svg {
+  width: 32px;
+  height: 32px;
+}
